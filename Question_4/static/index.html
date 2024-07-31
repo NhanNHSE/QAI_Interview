@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload and Predict</title>
+</head>
+<body>
+    <h1>Upload Image for Prediction</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" id="image-upload" name="image" accept="image/*" required>
+        <button type="submit">Upload and Predict</button>
+    </form>
+    <div id="result">
+        <h2>Prediction Result:</h2>
+        <p id="prediction-text"></p>
+    </div>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append('image', document.getElementById('image-upload').files[0]);
+
+            fetch('/predict', {  // Ensure this matches your backend URL
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('prediction-text').innerText = `Error: ${data.error}`;
+                } else {
+                    document.getElementById('prediction-text').innerText = `Prediction: ${data.prediction}`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('prediction-text').innerText = `Error: ${error.message}`;
+            });
+        });
+    </script>
+</body>
+</html>

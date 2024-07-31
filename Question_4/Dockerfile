@@ -1,23 +1,20 @@
-# Use the official Python base image
-FROM python:3.11.5-slim
+# Sử dụng hình ảnh python 3.9
+FROM python:3.9-slim
 
-# Set the working directory in the container
+# Thiết lập thư mục làm việc
 WORKDIR /app
 
-# Copy the requirements file into the container
-COPY requirements.txt requirements.txt
+# Copy file requirements.txt nếu có (nếu không có thì có thể bỏ qua phần này)
+COPY requirements.txt .
 
-# Install the dependencies
+# Cài đặt các gói phụ thuộc
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code into the container
+# Copy tất cả các tệp dự án vào trong container
 COPY . .
 
-# Expose the port the app runs on
-EXPOSE 5000
+# Expose cổng mà ứng dụng sẽ chạy
+EXPOSE 8000
 
-# Define environment variable
-ENV FLASK_APP=app.py
-
-# Run the application
-CMD ["flask", "run", "--host=0.0.0.0"]
+# Chạy ứng dụng FastAPI bằng Uvicorn
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
