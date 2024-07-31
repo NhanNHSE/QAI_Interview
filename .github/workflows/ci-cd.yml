@@ -1,0 +1,56 @@
+# .github/workflows/ci-cd.yml
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11.5'
+
+    - name: Install dependencies
+      run: 
+        cd Question_4
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest
+
+    - name: Run tests
+      run: 
+        cd Question_4
+        pytest
+
+  build:
+    runs-on: windows-latest
+    needs: test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Log in to Docker Hub
+      run: 
+        cd Question_4
+        echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+    - name: Build and Push Docker image
+      run: |
+        cd Question_4
+        docker build -t my-flask-app .
+        docker tag my-flask-app:latest nhannh25/my-flask-app:latest
+        docker push nhannh25/my-flask-app:latest
