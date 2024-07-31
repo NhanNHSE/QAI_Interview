@@ -1,0 +1,47 @@
+# Analysis of Optical Character Recognition Methods
+
+## Exercise 1: Basic Machine Learning with Neural Network
+
+### Approach
+This exercise uses a simple neural network to classify optical characters from the MNIST dataset. The neural network has one hidden layer with ReLU activation and an output layer with Softmax activation for classification. The main steps include:
+
+1. **Data Preparation:** Load and prepare MNIST data from CSV files.
+2. **Preprocessing:** Normalize images to a range of 0 to 1 and add a bias term to the data.
+3. **Parameter Initialization:** Initialize weights for the neural network layers.
+4. **Training:** Use gradient descent to update weights based on prediction errors.
+5. **Prediction and Evaluation:** Predict classes for test data and evaluate performance using accuracy.
+
+### Advantages
+- **Simple and Understandable:** The basic model is easy to understand and implement for straightforward classification problems.
+- **Few Parameters:** Uses fewer parameters and does not require a complex network structure.
+
+### Disadvantages
+- **Limited Performance:** The simple model may not capture complex features of the MNIST data effectively.
+- **Not Suitable for Complex Data:** May not perform well on more complex data or when the number of layers and neurons is insufficient.
+- **Tuning Challenges:** Choosing the number of layers and neurons significantly impacts model performance.
+
+## Exercise 3: Deep Learning with Triplet Loss and Dropout
+
+### Approach
+This exercise employs a deeper neural network with Triplet Loss and dropout to enhance classification performance. Triplet Loss optimizes the distance between features of anchor, positive, and negative samples. The main steps include:
+
+1. **Data Preprocessing:** Create one-hot encoded labels and normalize images.
+2. **Model Initialization:** Build a deeper neural network with multiple layers and dropout to reduce overfitting.
+3. **Training:** Use Triplet Loss to train the model with triplet data.
+4. **Prediction and Evaluation:** Assess the model based on accuracy and loss.
+
+### Advantages
+- **Higher Performance:** A deeper model with Triplet Loss helps learn better features and achieve more accurate classification.
+- **Better Feature Learning:** Dropout reduces overfitting and improves model generalization.
+- **Handles Complex Data:** Capable of handling more complex data and learning sophisticated features.
+
+### Disadvantages
+- **Higher Resource Requirements:** The model requires more computational resources and memory for training, especially with deep networks.
+- **Complex Model Structure:** Implementing and tuning the model is more complex and requires advanced skills.
+- **Data Quality Challenges:** Requires accurate and effective triplet data creation for training the model.
+
+## Conclusion
+- **Basic Neural Network** is a straightforward and easy-to-implement choice for simple classification tasks. However, it may struggle with more complex problems and requires adjustments to improve performance.
+- **Deep Learning with Triplet Loss and Dropout** offers better classification performance and the ability to learn more sophisticated features. However, it demands more resources and can be more complex to implement and optimize.
+
+Choosing between these methods depends on the specific requirements of the task and available resources. For more complex classification tasks, deep learning methods may offer clear advantages over basic machine learning approaches.
