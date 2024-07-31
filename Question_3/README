@@ -3,8 +3,11 @@
 ## Exercise 1: Basic Machine Learning with Neural Network
 
 ### Approach
-This exercise uses a simple neural network to classify optical characters from the MNIST dataset. The neural network has one hidden layer with ReLU activation and an output layer with Softmax activation for classification. The main steps include:
+This exercise uses a simple neural network to classify optical characters from the MNIST dataset. The neural network features:
+- **One hidden layer** with ReLU activation.
+- **Output layer** with Softmax activation for classification.
 
+**Main Steps:**
 1. **Data Preparation:** Load and prepare MNIST data from CSV files.
 2. **Preprocessing:** Normalize images to a range of 0 to 1 and add a bias term to the data.
 3. **Parameter Initialization:** Initialize weights for the neural network layers.
@@ -23,10 +26,13 @@ This exercise uses a simple neural network to classify optical characters from t
 ## Exercise 3: Deep Learning with Triplet Loss and Dropout
 
 ### Approach
-This exercise employs a deeper neural network with Triplet Loss and dropout to enhance classification performance. Triplet Loss optimizes the distance between features of anchor, positive, and negative samples. The main steps include:
+This exercise employs a deeper neural network with Triplet Loss and dropout to enhance classification performance. Key aspects include:
+- **Triplet Loss:** Optimizes the distance between features of anchor, positive, and negative samples.
+- **Dropout:** Reduces overfitting and improves model generalization.
 
+**Main Steps:**
 1. **Data Preprocessing:** Create one-hot encoded labels and normalize images.
-2. **Model Initialization:** Build a deeper neural network with multiple layers and dropout to reduce overfitting.
+2. **Model Initialization:** Build a deeper neural network with multiple layers and dropout.
 3. **Training:** Use Triplet Loss to train the model with triplet data.
 4. **Prediction and Evaluation:** Assess the model based on accuracy and loss.
 
@@ -41,7 +47,7 @@ This exercise employs a deeper neural network with Triplet Loss and dropout to e
 - **Data Quality Challenges:** Requires accurate and effective triplet data creation for training the model.
 
 ## Conclusion
-- **Basic Neural Network** is a straightforward and easy-to-implement choice for simple classification tasks. However, it may struggle with more complex problems and requires adjustments to improve performance.
-- **Deep Learning with Triplet Loss and Dropout** offers better classification performance and the ability to learn more sophisticated features. However, it demands more resources and can be more complex to implement and optimize.
+- **Basic Neural Network**: A straightforward and easy-to-implement choice for simple classification tasks. However, it may struggle with more complex problems and requires adjustments to improve performance.
+- **Deep Learning with Triplet Loss and Dropout**: Offers better classification performance and the ability to learn more sophisticated features. However, it demands more resources and can be more complex to implement and optimize.
 
 Choosing between these methods depends on the specific requirements of the task and available resources. For more complex classification tasks, deep learning methods may offer clear advantages over basic machine learning approaches.
