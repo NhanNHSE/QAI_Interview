@@ -1,20 +1,23 @@
-# Sử dụng hình ảnh python 3.9
-FROM python:3.9-slim
+# Use the official Python image from the Docker Hub
+FROM python:3.11.5-slim
 
-# Thiết lập thư mục làm việc
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy file requirements.txt nếu có (nếu không có thì có thể bỏ qua phần này)
+# Copy the requirements file into the container at /app
 COPY requirements.txt .
 
-# Cài đặt các gói phụ thuộc
+# Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy tất cả các tệp dự án vào trong container
+# Copy the current directory contents into the container at /app
 COPY . .
 
-# Expose cổng mà ứng dụng sẽ chạy
-EXPOSE 8000
+# Expose port 5000 to allow communication to/from the container
+EXPOSE 5000
 
-# Chạy ứng dụng FastAPI bằng Uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Define environment variable for Flask
+ENV FLASK_APP=app.py
+
+# Run Flask when the container launches
+CMD ["flask", "run", "--host=0.0.0.0"]

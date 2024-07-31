@@ -6,7 +6,7 @@ This FastAPI application serves a machine learning model trained on the MNIST da
 ## Accessing the Application
 You can access the application by navigating to the following URL in your web browser:
 
-http://127.0.0.1:8000/
+http://127.0.0.1:5000/
 
 ## Endpoints
 - **GET /**: Displays the upload form.
