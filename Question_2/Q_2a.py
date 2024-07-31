@@ -1,25 +1,25 @@
 import numpy as np
 
-def triplet_loss_multi_samples(anchor, positives, negatives, margin=0.2):
+def triplet_loss(anchor, positive, negative, alpha=0.2):
     """
-    Compute the Triplet Loss for multiple positives and negatives.
-
-    Arguments:
-    anchor -- numpy array of shape (m, n), embeddings for the anchor images
-    positives -- numpy array of shape (m, k, n), embeddings for the positive images
-    negatives -- numpy array of shape (m, l, n), embeddings for the negative images
-    alpha -- margin
-
-    Returns:
-    loss -- float, the value of the triplet loss.
+    Compute the Triplet Loss.
+    anchor: numpy array, feature vector of the anchor point
+    positive: numpy array, feature vector of the positive point
+    negative: numpy array, feature vector of the negative point
+    alpha: float, margin to ensure separation
     """
-    # Compute the L2 distance between anchor and all positives, then average
-    pos_dist = np.mean(np.sum(np.square(anchor[:, np.newaxis, :] - positives), axis=2), axis=1)
+    # Compute Euclidean distance
+    pos_distance = np.sum((anchor - positive) ** 2)
+    neg_distance = np.sum((anchor - negative) ** 2)
+    
+    # Compute triplet loss
+    loss = np.maximum(pos_distance - neg_distance + alpha, 0)
+    return loss
 
-    # Compute the L2 distance between anchor and all negatives, then average
-    neg_dist = np.mean(np.sum(np.square(anchor[:, np.newaxis, :] - negatives), axis=2), axis=1)
+# Example usage
+anchor = np.array([1.0, 2.0, 3.0])
+positive = np.array([1.1, 2.1, 3.1])
+negative = np.array([4.0, 5.0, 6.0])
 
-    # Compute the triplet loss
-    loss = np.maximum(0, pos_dist - neg_dist + margin)
-
-    return np.mean(loss)
+loss = triplet_loss(anchor, positive, negative)
+print(f"Triplet Loss: {loss}")

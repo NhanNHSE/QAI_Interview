@@ -1,25 +1,31 @@
 import numpy as np
 
-def triplet_loss_one_sample(anchor, positive, negative, margin=1.0):
+def extended_triplet_loss(anchor, positives, negatives, alpha=0.2):
     """
-    Computes the Triplet Loss for multiple anchors, positives, and negatives.
-
-    Parameters:
-    - anchor: np.ndarray, feature vector of the anchors.
-    - positive: np.ndarray, feature vector of the positive.
-    - negative: np.ndarray, feature vector of the negative.
-    - margin: float, margin for calculating the loss.
-
-    Returns:
-    - total_loss: float, the value of the triplet loss.
+    Compute the Triplet Loss with multiple positive and negative samples.
+    anchor: numpy array, feature vector of the anchor point
+    positives: numpy array, feature vectors of positive points, shape (n_positives, dim)
+    negatives: numpy array, feature vectors of negative points, shape (n_negatives, dim)
+    alpha: float, margin to ensure separation
     """
-    # Tính toán khoảng cách bình phương giữa anchor và positive
-    pos_dist = np.sum(np.square(anchor - positive), axis=-1)
+    # Compute distances between anchor and all positive points
+    pos_distances = np.sum((anchor - positives) ** 2, axis=1)
     
-    # Tính toán khoảng cách bình phương giữa anchor và negative
-    neg_dist = np.sum(np.square(anchor - negative), axis=-1)
+    # Compute distances between anchor and all negative points
+    neg_distances = np.sum((anchor - negatives) ** 2, axis=1)
     
-    # Tính toán Triplet Loss
-    loss = np.maximum(0, pos_dist - neg_dist + margin)
+    # Compute loss for each positive-negative pair
+    loss = 0
+    for pos_dist in pos_distances:
+        for neg_dist in neg_distances:
+            loss += np.maximum(pos_dist - neg_dist + alpha, 0)
     
     return loss
+
+# Example usage
+anchor = np.array([1.0, 2.0, 3.0])
+positives = np.array([[1.1, 2.1, 3.1], [1.2, 2.2, 3.2]])
+negatives = np.array([[4.0, 5.0, 6.0], [4.1, 5.1, 6.1]])
+
+loss = extended_triplet_loss(anchor, positives, negatives)
+print(f"Extended Triplet Loss: {loss}")
