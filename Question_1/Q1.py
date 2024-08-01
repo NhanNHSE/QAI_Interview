@@ -1,148 +1,99 @@
 import numpy as np
-import pickle  # Thêm import pickle
+import pickle
 
-# Function to load MNIST data from CSV file using numpy
-def load_mnist_from_csv(file_path):
-    data = np.genfromtxt(file_path, delimiter=',', skip_header=1)
-    labels = data[:, 0].astype(int)
-    images = data[:, 1:]
-    return images, labels
+# Hàm softmax
+def softmax(z):
+    exp_z = np.exp(z - np.max(z, axis=1, keepdims=True))  # Trừ max để tăng độ ổn định số học
+    return exp_z / np.sum(exp_z, axis=1, keepdims=True)
 
-# Normalize the images
-def normalize(images):
-    return images.astype(np.float32) / 255.0
-
-# Initialize parameters
-def init_params(input_dim, output_dim):
-    W = np.random.randn(output_dim, input_dim + 1) * 0.01
-    return W
-
-# Add bias term to the input
-def pad(x):
-    return np.concatenate((np.ones((1, x.shape[1]), dtype=x.dtype), x), axis=0)
-
-# Softmax activation function
-def softmax(Z):
-    exp_Z = np.exp(Z - np.max(Z, axis=0, keepdims=True))  # Numerical stability
-    return exp_Z / np.sum(exp_Z, axis=0, keepdims=True)
-
-# Compute Cross-Entropy Loss
-def compute_loss(Y_pred, Y):
-    m = Y.shape[1]
-    loss = -np.sum(Y * np.log(Y_pred + 1e-8)) / m
+# Hàm tính toán mất mát (cross-entropy loss)
+def compute_loss(y, y_hat):
+    m = y.shape[0]
+    loss = -np.sum(y * np.log(y_hat + 1e-8)) / m
     return loss
 
-# Forward propagation
-def forward_prop(W, X):
-    Z = np.dot(W, X)
-    A = softmax(Z)
-    return Z, A
+# Hàm thêm bias (cột 1) vào ma trận đầu vào
+def add_bias(X):
+    return np.hstack([np.ones((X.shape[0], 1)), X])
 
-# Backward propagation
-def backward_prop(A, Y, X):
-    m = X.shape[1]
-    dZ = A - Y
-    dW = np.dot(dZ, X.T) / m
-    return dW
+# Hàm dự đoán xác suất
+def predict_proba(X, W):
+    z = np.dot(X, W)
+    return softmax(z)
 
-# Update parameters using gradient descent
-def update_params(W, dW, alpha):
-    W -= alpha * dW
-    return W
+# Hàm dự đoán lớp
+def predict(X, W):
+    proba = predict_proba(X, W)
+    return np.argmax(proba, axis=1)
 
-# Get predictions
-def get_predictions(A):
-    return np.argmax(A, axis=0)
+# Hàm tính accuracy
+def compute_accuracy(y_true, y_pred):
+    return np.mean(y_true == y_pred)
 
-# Calculate accuracy
-def get_accuracy(predictions, Y):
-    return np.mean(predictions == Y)
-
-# Save model parameters
-def save_params(W, W_path):
-    np.save(W_path, W)
-
-# Load model parameters
-def load_params(W_path):
-    W = np.load(W_path)
-    return W
-
-# Save model using pickle
-def save_model_pickle(model, filename):
-    with open(filename, 'wb') as file:
-        pickle.dump(model, file)
-
-# Load model using pickle
-def load_model_pickle(filename):
-    with open(filename, 'rb') as file:
-        model = pickle.load(file)
-    return model
-
-# Gradient descent
-def gradient_descent(X, Y, alpha, iterations):
-    input_dim = X.shape[0]
-    output_dim = Y.shape[0]  # Number of classes
-    
-    W = init_params(input_dim, output_dim)
-    
-    X_padded = pad(X)
-    
+# Hàm cập nhật trọng số sử dụng gradient descent
+def gradient_descent(X, y, W, alpha, iterations):
+    m = X.shape[0]
     for i in range(iterations):
-        Z, A = forward_prop(W, X_padded)
-        dW = backward_prop(A, Y, X_padded)
-        W = update_params(W, dW, alpha)
+        y_hat = predict_proba(X, W)
+        loss = compute_loss(y, y_hat)
+        gradient = np.dot(X.T, (y_hat - y)) / m
+        W -= alpha * gradient
         
         if i % 100 == 0:
-            loss = compute_loss(A, Y)
-            predictions = get_predictions(A)
-            accuracy = get_accuracy(predictions, np.argmax(Y, axis=0))
-            print(f"Iteration {i}: Loss = {loss:.4f}, Accuracy = {accuracy * 100:.2f}%")
+            predictions = predict(X, W)
+            accuracy = compute_accuracy(np.argmax(y, axis=1), predictions)
+            print(f'Iteration {i}, Loss: {loss:.4f}, Accuracy: {accuracy * 100:.2f}%')
     
     return W
 
-# Convert labels to one-hot encoding
-def one_hot(Y, num_classes):
-    one_hot_Y = np.zeros((num_classes, Y.size))
-    one_hot_Y[Y, np.arange(Y.size)] = 1
-    return one_hot_Y
+# Hàm chuyển đổi nhãn thành one-hot encoding
+def one_hot_encode(y, num_classes):
+    one_hot = np.zeros((y.size, num_classes))
+    one_hot[np.arange(y.size), y] = 1
+    return one_hot
 
-# Example usage
-if __name__ == "__main__":
-    # Load the MNIST dataset
-    train_images, train_labels = load_mnist_from_csv('C:\FPT\SEMESTER_6\PV\Question_1\data\mnist_train.csv')
-    test_images, test_labels = load_mnist_from_csv('C:\FPT\SEMESTER_6\PV\Question_1\data\mnist_test.csv')
+# Hàm tải dữ liệu từ file CSV
+def load_data(csv_path):
+    data = np.genfromtxt(csv_path, delimiter=',', skip_header=1)
+    X = data[:, 1:]  # Các cột đặc trưng
+    y = data[:, 0].astype(int)  # Cột nhãn
+    return X, y
 
-    # Normalize the images
-    train_images = normalize(train_images)
-    test_images = normalize(test_images)
+# Chuẩn bị dữ liệu
+X_train, y_train = load_data('Question_3/mnist_train.csv')
+X_test, y_test = load_data('Question_3/mnist_test.csv')
 
-    # Transpose images to match the expected input shape
-    train_images = train_images.T
-    test_images = test_images.T
+# Chuẩn hóa dữ liệu
+X_train = X_train / 255.0
+X_test = X_test / 255.0
 
-    # Convert labels to one-hot encoding
-    num_classes = 10  # 10 classes for MNIST
-    train_labels_one_hot = one_hot(train_labels, num_classes)
-    test_labels_one_hot = one_hot(test_labels, num_classes)
+# Thêm bias vào dữ liệu
+X_train_bias = add_bias(X_train)
+X_test_bias = add_bias(X_test)
 
-    alpha = 0.01
-    iterations = 1000
+# Chuyển đổi nhãn thành one-hot encoding
+num_classes = 10
+y_train_one_hot = one_hot_encode(y_train, num_classes)
+y_test_one_hot = one_hot_encode(y_test, num_classes)
 
-    # Train the model
-    W = gradient_descent(train_images, train_labels_one_hot, alpha, iterations)
+# Khởi tạo trọng số
+W = np.random.randn(X_train_bias.shape[1], num_classes) * 0.01
 
-    # Save the trained parameters
-    save_params(W, 'W.npy')
+# Huấn luyện mô hình
+alpha = 0.01
+iterations = 1000
+W = gradient_descent(X_train_bias, y_train_one_hot, W, alpha, iterations)
 
-    # Save the model using pickle
-    save_model_pickle(W, 'nn_model.pkl')
+# Lưu mô hình bằng pickle
+with open('softmax_regression_model.pkl', 'wb') as f:
+    pickle.dump(W, f)
 
-    # Load the model using pickle
-    W_loaded = load_model_pickle('nn_model.pkl')
+# Tải mô hình từ file
+with open('softmax_regression_model.pkl', 'rb') as f:
+    W_loaded = pickle.load(f)
 
-    # Test the model
-    _, A_test = forward_prop(W_loaded, pad(test_images))
-    predictions = get_predictions(A_test)
-    accuracy = get_accuracy(predictions, np.argmax(test_labels_one_hot, axis=0))
+# Dự đoán trên tập kiểm tra
+y_pred = predict(X_test_bias, W_loaded)
+accuracy = compute_accuracy(y_test, y_pred)
 
-    print(f"Final Test Accuracy: {accuracy * 100:.2f}%")
+print(f'Final Test Accuracy: {accuracy * 100:.2f}%')
