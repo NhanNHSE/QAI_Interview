@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-latest  # Use Windows Runner
 
     steps:
       - name: Checkout code
@@ -35,7 +35,7 @@ jobs:
       - name: Build Docker image
         run: |
           cd Question_4
-          docker build -t my-flask-app .
+          docker build -t softmax-regression-api .
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -46,13 +46,13 @@ jobs:
       - name: Push Docker image
         run: |
           cd Question_4
-          docker tag my-flask-app ${{ secrets.DOCKER_USERNAME }}/my-flask-app:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-flask-app:latest
+          docker tag softmax-regression-api ${{ secrets.DOCKER_USERNAME }}/softmax-regression-api:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/softmax-regression-api:latest
 
       - name: Run Docker container
         run: |
           cd Question_4
-          docker run -d -p 5000:5000 --name flask-app my-flask-app
+          docker run -d -p 5000:5000 --name softmax-regression-api softmax-regression-api
 
       - name: Check Docker container health
         run: |
@@ -62,5 +62,5 @@ jobs:
       - name: Clean up
         run: |
           cd Question_4
-          docker stop flask-app
-          docker rm flask-app
+          docker stop softmax-regression-api
+          docker rm softmax-regression-api
