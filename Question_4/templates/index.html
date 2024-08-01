@@ -23,7 +23,7 @@
             const formData = new FormData();
             formData.append('image', document.getElementById('image-upload').files[0]);
 
-            fetch('/predict', {  // Ensure this matches your backend URL
+            fetch('/predict', {
                 method: 'POST',
                 body: formData
             })
